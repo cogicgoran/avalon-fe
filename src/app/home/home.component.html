@@ -1,0 +1,15 @@
+<div>
+  <button (click)="createGame()">
+    Create room
+  </button>
+  <p>or</p>
+  <form [formGroup]="joinRoomForm" (submit)="joinRoom()" >
+    <div>
+      Room id
+      <input name="gameId" formControlName="gameId"  />
+    </div>
+    <button type="submit" >
+      Join room
+    </button>
+  </form>
+</div>

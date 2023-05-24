@@ -1,0 +1,9 @@
+<div>
+  <h2>Players:</h2>
+  <p *ngFor="let player of getPlayers()">
+    {{ player }}
+  </p>
+</div>
+<div>
+  <button (click)="startGame()">Start game</button>
+</div>
