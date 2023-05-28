@@ -8,79 +8,92 @@ import { Router } from '@angular/router';
   styleUrls: ['./game.component.css'],
 })
 export class GameComponent {
-
   constructor(private gameService: GameService, private router: Router) {
     if (this.gameService.getPlayers().length === 0) {
       this.router.navigate(['/']);
     }
   }
 
+  isPlayerUnsorted(player: string) {
+    return this.gameService.getSelf()?.unsorted?.includes(player);
+  }
+
+  isPlayerEnemy(player: string) {
+    return this.gameService.getSelf()?.enemies?.includes(player);
+
+  }
+
+  isPlayerTeammate(player: string) {
+    return this.gameService.getSelf()?.teammates?.includes(player);
+
+  }
+
   getCurrentRound() {
-    return this.gameService.game?.currentRound
+    return this.gameService.game?.currentRound;
   }
 
-  isGameOver(){
-    return this.gameService.game?.nextMove?.step === STEP_NAME.GameOver
+  isGameOver() {
+    return this.gameService.game?.nextMove?.step === STEP_NAME.GameOver;
   }
 
-  getPlayerRole(){
+  getPlayerRole() {
     return this.gameService.getPlayerRole();
   }
 
-  hasGameStarted(){
+  hasGameStarted() {
     return this.gameService.game?.isGameInProgress;
   }
 
-  getGameId(){
+  getGameId() {
     return this.gameService.getGameId();
   }
 
-  toAdventureApprovalStep(){
+  toAdventureApprovalStep() {
     this.gameService.toAdventureApprovalStep();
   }
 
   getAdventureHistory() {
-    return this.gameService.getAdventureHistory()
+    return this.gameService.getAdventureHistory();
   }
 
   // only vote once per adventure to avoid sending multiple request, since vote cannote be changed
   voteAdventureOutcome(vote: 'success' | 'fail') {
-    this.gameService.voteAdventureOutcome(vote)
+    this.gameService.voteAdventureOutcome(vote);
   }
 
-  isAdventurer(){
+  isAdventurer() {
     return this.gameService.isAdventurer();
   }
 
-  isAdventureOutcomeStep(){
-    return this.gameService.isAdventureOutcomeStep()
+  isAdventureOutcomeStep() {
+    return this.gameService.isAdventureOutcomeStep();
   }
 
-  isAdventureApprovalStep(){
-    return this.gameService.isAdventureApprovalStep()
+  isAdventureApprovalStep() {
+    return this.gameService.isAdventureApprovalStep();
   }
 
-  isAdventureApprovalVoter(){
+  isAdventureApprovalVoter() {
     return this.gameService.isAdventureApprovalVoter();
   }
 
-  approveAdventure(isAgree: boolean){
+  approveAdventure(isAgree: boolean) {
     this.gameService.approveAdventure(isAgree);
   }
 
-  isLobbyLeader(){
+  isLobbyLeader() {
     return this.gameService.isLobbyLeader();
   }
 
   isGameInProgress() {
-    return this.gameService.game?.isGameInProgress ?? false
+    return this.gameService.game?.isGameInProgress ?? false;
   }
 
   currentMove() {
     return this.gameService.getCurrentMove();
   }
 
-  isCurrentPlayerMove(){
+  isCurrentPlayerMove() {
     return this.getPlayerId() === this.currentMove()?.player;
   }
 
@@ -89,14 +102,12 @@ export class GameComponent {
   }
 
   togglePlayer(player: string) {
-    console.log('player to toggle:', player)
+    console.log('player to toggle:', player);
     this.gameService.updateSelectedPlayers(player);
   }
 
   showChoosePlayerButton() {
-    return (
-      this.isCurrentPlayerMove()
-    );
+    return this.isCurrentPlayerMove();
   }
 
   getPlayerId() {

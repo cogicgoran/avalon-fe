@@ -3,7 +3,7 @@
   <h2 *ngIf="hasGameStarted()">You are <span>{{ getPlayerRole() }}</span></h2>
   <h2>Players:</h2>
   <div *ngFor="let player of getPlayers()">
-    <p>{{ player }} <span *ngIf="isSelectedPlayer(player)">*</span></p>
+    <p [ngClass]="{ 'role--unsorted': isPlayerUnsorted(player), 'role--enemy': isPlayerEnemy(player), 'role--teammate': isPlayerTeammate(player),}">{{ player }} <span *ngIf="isSelectedPlayer(player)">*</span></p>
     <button *ngIf="showChoosePlayerButton()" (click)="togglePlayer(player)">Choose</button>
   </div>
   <button *ngIf="isCurrentPlayerMove()" (click)="toAdventureApprovalStep()">Start adventure</button>

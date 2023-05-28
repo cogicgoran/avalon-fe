@@ -128,10 +128,15 @@ export class GameService {
   }
 
   getPlayerRole() {
-    console.log(this.game);
     return this.game?.playersWithRoles.find(
       ({ player }) => player === this.socket.id
     )?.role.name;
+  }
+
+  getSelf() {
+    return this.game?.playersWithRoles.find(
+      ({ player }) => player === this.socket.id
+    );
   }
 
   getAdventureHistory() {
