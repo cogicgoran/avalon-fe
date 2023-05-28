@@ -1,9 +1,38 @@
 <div>
+  <h1>Game ID: {{ getGameId() }}</h1>
+  <h2 *ngIf="hasGameStarted()">You are <span>{{ getPlayerRole() }}</span></h2>
   <h2>Players:</h2>
-  <p *ngFor="let player of getPlayers()">
-    {{ player }}
-  </p>
+  <div *ngFor="let player of getPlayers()">
+    <p>{{ player }} <span *ngIf="isSelectedPlayer(player)">*</span></p>
+    <button *ngIf="showChoosePlayerButton()" (click)="togglePlayer(player)">Choose</button>
+  </div>
+  <button *ngIf="isCurrentPlayerMove()" (click)="toAdventureApprovalStep()">Start adventure</button>
 </div>
 <div>
+  <h3>Adventures</h3>
+  <div *ngFor="let outcome of getAdventureHistory()">
+    <button *ngIf="outcome === 0" disabled>Successfull</button>
+    <button *ngIf="outcome === 1" disabled>Failed</button>
+    <button *ngIf="outcome === 2" disabled>Not played</button>
+  </div>
+  <h4>Round: {{ getCurrentRound() }}</h4>
+
+</div>
+<div *ngIf="isAdventureOutcomeStep() && isAdventurer()">
+  <button (click)="voteAdventureOutcome('success')">Success</button>
+  <button (click)="voteAdventureOutcome('fail')">Fail</button>
+</div>
+
+<div *ngIf="isAdventureApprovalStep()">
+  <button (click)="approveAdventure(true)">Approve</button>
+  <button (click)="approveAdventure(false)">Disapprove</button>
+</div>
+
+<div *ngIf="!isGameInProgress() && isLobbyLeader()">
   <button (click)="startGame()">Start game</button>
+</div>
+
+<div *ngIf="isGameOver()">
+  <h3>Game Over!</h3>
+  <button (click)="startGame()">New Game</button>
 </div>

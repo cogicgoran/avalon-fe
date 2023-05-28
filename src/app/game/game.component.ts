@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GameService } from '../game.service';
+import { GameService, STEP_NAME } from '../game.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,18 +8,106 @@ import { Router } from '@angular/router';
   styleUrls: ['./game.component.css'],
 })
 export class GameComponent {
+
   constructor(private gameService: GameService, private router: Router) {
     if (this.gameService.getPlayers().length === 0) {
       this.router.navigate(['/']);
     }
   }
 
-  startGame(){
-    this.gameService.startGame()
+  getCurrentRound() {
+    return this.gameService.game?.currentRound
+  }
+
+  isGameOver(){
+    return this.gameService.game?.nextMove?.step === STEP_NAME.GameOver
+  }
+
+  getPlayerRole(){
+    return this.gameService.getPlayerRole();
+  }
+
+  hasGameStarted(){
+    return this.gameService.game?.isGameInProgress;
+  }
+
+  getGameId(){
+    return this.gameService.getGameId();
+  }
+
+  toAdventureApprovalStep(){
+    this.gameService.toAdventureApprovalStep();
+  }
+
+  getAdventureHistory() {
+    return this.gameService.getAdventureHistory()
+  }
+
+  // only vote once per adventure to avoid sending multiple request, since vote cannote be changed
+  voteAdventureOutcome(vote: 'success' | 'fail') {
+    this.gameService.voteAdventureOutcome(vote)
+  }
+
+  isAdventurer(){
+    return this.gameService.isAdventurer();
+  }
+
+  isAdventureOutcomeStep(){
+    return this.gameService.isAdventureOutcomeStep()
+  }
+
+  isAdventureApprovalStep(){
+    return this.gameService.isAdventureApprovalStep()
+  }
+
+  isAdventureApprovalVoter(){
+    return this.gameService.isAdventureApprovalVoter();
+  }
+
+  approveAdventure(isAgree: boolean){
+    this.gameService.approveAdventure(isAgree);
+  }
+
+  isLobbyLeader(){
+    return this.gameService.isLobbyLeader();
+  }
+
+  isGameInProgress() {
+    return this.gameService.game?.isGameInProgress ?? false
+  }
+
+  currentMove() {
+    return this.gameService.getCurrentMove();
+  }
+
+  isCurrentPlayerMove(){
+    return this.getPlayerId() === this.currentMove()?.player;
+  }
+
+  isSelectedPlayer(player: string) {
+    return this.gameService.getSelectedPlayers()!.includes(player);
+  }
+
+  togglePlayer(player: string) {
+    console.log('player to toggle:', player)
+    this.gameService.updateSelectedPlayers(player);
+  }
+
+  showChoosePlayerButton() {
+    return (
+      this.isCurrentPlayerMove()
+    );
+  }
+
+  getPlayerId() {
+    return this.gameService.socket.id;
+  }
+
+  startGame() {
+    this.gameService.startGame();
   }
 
   getPlayers() {
     return this.gameService.getPlayers();
   }
-
 }
