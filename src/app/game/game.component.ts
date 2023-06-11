@@ -8,10 +8,33 @@ import { Router } from '@angular/router';
   styleUrls: ['./game.component.css'],
 })
 export class GameComponent {
+  potentialMerlin: string | null = null;
+
   constructor(private gameService: GameService, private router: Router) {
     if (this.gameService.getPlayers().length === 0) {
       this.router.navigate(['/']);
     }
+  }
+
+  getWinningTeamName() {
+    return this.gameService.game?.winner;
+  }
+
+  selectPotentialMerlin(player: string) {
+    // this.gameService.selectPotentialMerlin();
+    console.log('selected:', player)
+    this.potentialMerlin = player;
+  }
+
+  guessMerlin() {
+    // if(!)
+    console.log('to guess:', this.potentialMerlin)
+    this.gameService.guessMerlin(this.potentialMerlin!)
+  }
+
+  isGuessingMerlin() {
+    const currentMove = this.gameService.getCurrentMove() as any; // TODO: fix bad type
+    return currentMove?.step === STEP_NAME.GuessMerlin && currentMove.player.player === this.gameService.getSelf().player;
   }
 
   isPlayerUnsorted(player: string) {

@@ -21,12 +21,14 @@ export enum LISTENABLE_GAME_EVENTS {
   AdventureApproval = 'adventureApproval',
   AdventureVoteUpdate = 'adventureVoteUpdate',
   AdventureApprovalEnd = 'adventureApprovalEnd',
+  MerlinGuessResult = 'merlinGuessResult'
 }
 
 export enum STEP_NAME {
   ChooseAdventurePlayers,
   AdventureApproval,
   AdventureOutcomeVoting,
+  GuessMerlin,
   GameOver
 }
 
@@ -48,7 +50,8 @@ export class GameService {
     lobbyLeader: string;
     adventureHistory: Array<number>;
     playersWithRoles: Array<any>;
-    currentRound: number
+    currentRound: number;
+    winner: 'evil' | 'good';
   } | null = null;
   isCurrentPlayerMove = false;
 
@@ -124,7 +127,20 @@ export class GameService {
           this.game = gameInstance;
         }
       );
+
+      this.socket.on(LISTENABLE_GAME_EVENTS.MerlinGuessResult, (error, gameInstance) => {
+        if(error) {
+          // TODO: handle error
+        }
+        if(gameInstance.id !== this.game?.id) return;
+        console.log(gameInstance);
+        this.game = gameInstance;
+      })
     });
+  }
+
+  guessMerlin(player: string) {
+    this.socket.emit('guessMerlin', this.game!.id, player);
   }
 
   getPlayerRole() {

@@ -1,12 +1,25 @@
 <div>
   <h1>Game ID: {{ getGameId() }}</h1>
-  <h2 *ngIf="hasGameStarted()">You are <span>{{ getPlayerRole() }}</span></h2>
+  <h2 *ngIf="hasGameStarted()">
+    You are <span>{{ getPlayerRole() }}</span>
+  </h2>
   <h2>Players:</h2>
   <div *ngFor="let player of getPlayers()">
-    <p [ngClass]="{ 'role--unsorted': isPlayerUnsorted(player), 'role--enemy': isPlayerEnemy(player), 'role--teammate': isPlayerTeammate(player),}">{{ player }} <span *ngIf="isSelectedPlayer(player)">*</span></p>
-    <button *ngIf="showChoosePlayerButton()" (click)="togglePlayer(player)">Choose</button>
+    <p
+      [ngClass]="{ 'role--unsorted': isPlayerUnsorted(player), 'role--enemy': isPlayerEnemy(player), 'role--teammate': isPlayerTeammate(player),}"
+    >
+      {{ player }} <span *ngIf="isSelectedPlayer(player)">*</span>
+    </p>
+    <button *ngIf="showChoosePlayerButton()" (click)="togglePlayer(player)">
+      Choose
+    </button>
+    <button *ngIf="isGuessingMerlin()" (click)="selectPotentialMerlin(player)">
+      MARK AS MERLIN<span *ngIf="potentialMerlin === player">!¿!</span>>
+    </button>
   </div>
-  <button *ngIf="isCurrentPlayerMove()" (click)="toAdventureApprovalStep()">Start adventure</button>
+  <button *ngIf="isCurrentPlayerMove()" (click)="toAdventureApprovalStep()">
+    Start adventure
+  </button>
 </div>
 <div>
   <h3>Adventures</h3>
@@ -16,7 +29,6 @@
     <button *ngIf="outcome === 2" disabled>Not played</button>
   </div>
   <h4>Round: {{ getCurrentRound() }}</h4>
-
 </div>
 <div *ngIf="isAdventureOutcomeStep() && isAdventurer()">
   <button (click)="voteAdventureOutcome('success')">Success</button>
@@ -26,6 +38,12 @@
 <div *ngIf="isAdventureApprovalStep()">
   <button (click)="approveAdventure(true)">Approve</button>
   <button (click)="approveAdventure(false)">Disapprove</button>
+</div>
+
+<div *ngIf="!isGameInProgress() && getWinningTeamName() != null">Winner: {{ getWinningTeamName() }}</div>
+
+<div *ngIf="isGuessingMerlin()">
+  <button (click)="guessMerlin()">Confirm guess</button>
 </div>
 
 <div *ngIf="!isGameInProgress() && isLobbyLeader()">
