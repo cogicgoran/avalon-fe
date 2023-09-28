@@ -3,32 +3,37 @@
   <h2 *ngIf="hasGameStarted()">
     You are <span>{{ getPlayerRole() }}</span>
   </h2>
-  <h2>Players:</h2>
-  <div *ngFor="let player of getPlayers()">
-    <p
-      [ngClass]="{ 'role--unsorted': isPlayerUnsorted(player), 'role--enemy': isPlayerEnemy(player), 'role--teammate': isPlayerTeammate(player),}"
-    >
-      {{ player }} <span *ngIf="isSelectedPlayer(player)">*</span>
-    </p>
-    <button *ngIf="showChoosePlayerButton()" (click)="togglePlayer(player)">
-      Choose
-    </button>
-    <button *ngIf="isGuessingMerlin()" (click)="selectPotentialMerlin(player)">
-      MARK AS MERLIN<span *ngIf="potentialMerlin === player">!¿!</span>>
-    </button>
+  <div class="board">
+    <div
+      [ngClass]="{ 'role--unsorted': isPlayerUnsorted(player), 'player--enemy': isPlayerEnemy(player), 'player--friendly': isPlayerTeammate(player)}"
+      class="board__player" [ngStyle]="{'transform': calculateTransform(player, getPlayers())}"
+      *ngFor="let player of getPlayers(); index as i"
+      (click)="showChoosePlayerButton() && togglePlayer(player); isGuessingMerlin() && selectPotentialMerlin(player)">
+      <img src="assets/User_icon_2.svg.png" alt="Character image" />
+      <div class="player-name">{{ player }} <span *ngIf="isSelectedPlayer(player)">*</span><span
+          *ngIf="potentialMerlin === player">!¿!</span></div>
+    </div>
+    <div *ngIf="isGameInProgress()">
+      <div class="board__adventure-status">
+        <div *ngFor="let adventure of [0, 1, 2, 3, 4]">
+          <img *ngIf="getAdventureOutcome(adventure) === 0" src="assets/round-success.png" alt="Round Success" />
+          <img *ngIf="getAdventureOutcome(adventure) === 1" src="assets/round-fail.png" alt="Round Fail" />
+          <span *ngIf="![0,1].includes(getAdventureOutcome(adventure))">{{ getAdventurersForAdventure(adventure)
+            }}</span>
+        </div>
+      </div>
+      <div class="board__adventure-rounds">
+        <div *ngFor="let adventure of [0, 1, 2, 3, 4]">
+          <img *ngIf="getCurrentRound() === adventure + 1" src="assets/round-success.png" alt="Round Success">
+          <span *ngIf="getCurrentRound() !== adventure + 1">{{ adventure + 1 }}</span>
+        </div>
+      </div>
+    </div>
   </div>
+
   <button *ngIf="isCurrentPlayerMove()" (click)="toAdventureApprovalStep()">
     Start adventure
   </button>
-</div>
-<div>
-  <h3>Adventures</h3>
-  <div *ngFor="let outcome of getAdventureHistory()">
-    <button *ngIf="outcome === 0" disabled>Successfull</button>
-    <button *ngIf="outcome === 1" disabled>Failed</button>
-    <button *ngIf="outcome === 2" disabled>Not played</button>
-  </div>
-  <h4>Round: {{ getCurrentRound() }}</h4>
 </div>
 <div *ngIf="isAdventureOutcomeStep() && isAdventurer()">
   <button (click)="voteAdventureOutcome('success')">Success</button>

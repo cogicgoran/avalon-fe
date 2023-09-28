@@ -52,6 +52,7 @@ export class GameService {
     playersWithRoles: Array<any>;
     currentRound: number;
     winner: 'evil' | 'good';
+    adventurersPerAdventure: Array<number>;
   } | null = null;
   isCurrentPlayerMove = false;
 
@@ -70,7 +71,6 @@ export class GameService {
         this.router.navigate(['/game']);
       });
       const listener = (gameInstance: any) => {
-        console.log(gameInstance);
         this.game = gameInstance;
         this.socket.off(LISTENABLE_GAME_EVENTS.GameCreated, listener);
         this.router.navigate(['/game']);
@@ -91,7 +91,6 @@ export class GameService {
       this.socket.on(
         LISTENABLE_GAME_EVENTS.AdventurePlayersUpdated,
         (gameInstance) => {
-          console.log('updateRetrieved:', gameInstance);
           if (this.game?.id === gameInstance.id) {
             this.game = gameInstance;
           }
@@ -133,7 +132,6 @@ export class GameService {
           // TODO: handle error
         }
         if(gameInstance.id !== this.game?.id) return;
-        console.log(gameInstance);
         this.game = gameInstance;
       })
     });
@@ -213,7 +211,6 @@ export class GameService {
   }
 
   updateSelectedPlayers(player: string) {
-    console.log('before modify:', this.game?.selectedAdventurePlayers);
     if (!this.game?.selectedAdventurePlayers.includes(player)) {
       this.game?.selectedAdventurePlayers.push(player);
     } else {
@@ -222,7 +219,6 @@ export class GameService {
           (selectedPlayer) => selectedPlayer !== player
         );
     }
-    console.log('before emit:', this.game?.selectedAdventurePlayers);
     this.socket.emit(
       EMITABLE_GAME_EVENTS.ChoosePlayerForAdventure,
       this.game?.id,
@@ -237,7 +233,7 @@ export class GameService {
   startGame() {
     if (!this.isGameStartValid()) {
       // Show notification
-      console.log('Game must have between 5 and 10 players');
+      alert('Game must have between 5 and 10 players');
       return;
     }
     this.socket.emit(EMITABLE_GAME_EVENTS.StartGame, this.game?.id);

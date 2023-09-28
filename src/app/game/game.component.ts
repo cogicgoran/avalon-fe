@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { GameService, STEP_NAME } from '../game.service';
 import { Router } from '@angular/router';
 
@@ -9,11 +9,17 @@ import { Router } from '@angular/router';
 })
 export class GameComponent {
   potentialMerlin: string | null = null;
+  windowWidth: number = 0;
 
   constructor(private gameService: GameService, private router: Router) {
+
     if (this.gameService.getPlayers().length === 0) {
       this.router.navigate(['/']);
     }
+  }
+
+  ngOnInit() {
+    this.windowWidth = window.innerWidth;
   }
 
   getWinningTeamName() {
@@ -21,14 +27,10 @@ export class GameComponent {
   }
 
   selectPotentialMerlin(player: string) {
-    // this.gameService.selectPotentialMerlin();
-    console.log('selected:', player)
     this.potentialMerlin = player;
   }
 
   guessMerlin() {
-    // if(!)
-    console.log('to guess:', this.potentialMerlin)
     this.gameService.guessMerlin(this.potentialMerlin!)
   }
 
@@ -125,7 +127,6 @@ export class GameComponent {
   }
 
   togglePlayer(player: string) {
-    console.log('player to toggle:', player);
     this.gameService.updateSelectedPlayers(player);
   }
 
@@ -143,5 +144,32 @@ export class GameComponent {
 
   getPlayers() {
     return this.gameService.getPlayers();
+  }
+
+  calculateTransform(player: string, players: Array<string>): string {
+    const MAX_DISTANCE_X = this.windowWidth < 720 ? 128 : 256;
+    const MAX_DISTANCE_Y = this.windowWidth < 720 ? 96 : 156;
+    const playerPos = players.indexOf(this.gameService.socket.id);
+    const idx = players.indexOf(player) - playerPos;
+    const xOffset = Math.cos(Math.PI * 2 / players.length * idx + Math.PI / 2) * MAX_DISTANCE_X;
+    const yOffset = Math.sin(Math.PI * 2 / players.length * idx + Math.PI / 2) * MAX_DISTANCE_Y;
+    const translateString = `translate(calc(${xOffset}px - 50%), calc(${yOffset}px - 50%))`;
+    return translateString;
+  }
+
+  getAdventureOutcome(adventure: number) {
+    const adventureHistory = this.gameService.getAdventureHistory();
+    const adventureOutcome = adventureHistory[adventure];
+    return adventureOutcome;
+    // TODO: should return number of player to choose for current adventure
+  }
+
+  getAdventurersForAdventure(adventure: number) {
+    return this.gameService.game?.adventurersPerAdventure?.[adventure] ?? undefined;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.windowWidth = window.innerWidth;
   }
 }
